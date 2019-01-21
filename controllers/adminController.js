@@ -29,7 +29,7 @@ function verifyToken(req, res, next) {
     });
 }
 
-//03   Récupérer la liste des articles
+//03   Récupérer la liste des articles 000000
 exports.admin_articles_get = [
     verifyToken,
     (token, req, res, next) => {
