@@ -1,5 +1,6 @@
 let mongoose = require('mongoose');
 let moment = require('moment');
+let User = require('./user');
 
 let Schema = mongoose.Schema;
 
@@ -49,6 +50,21 @@ ArticleSchema
 .virtual('article_virtual_url')
 .get(function () {
   return '/admin/article/' + this._id;
+});
+
+ArticleSchema.pre('save', function (next) {
+    User.findById(this.article_user).exec(function (err, user) {
+        if (err) {
+            return next(err);
+        }
+
+        if (user == null) {
+            const error_user = new Error('no user found for the article to create.');
+            return next(error_user);
+        }
+
+        return next(); // everything is done, so let's call the next callback.
+    });
 });
 
 //Export model
