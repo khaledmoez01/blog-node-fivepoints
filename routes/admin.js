@@ -22,7 +22,7 @@ router.get('/article/:id_article', admin_controller.admin_article_get ); // kmg 
 router.post('/article/:id_article/update', upload.single('image'), admin_controller.admin_article_update_post); // kmg done
 
 //07   Suppression des commentaires d’un article puis suppression d’un article
-router.post('/article/:id_article/delete', admin_controller.admin_article_delete_post);
+router.post('/article/:id_article/delete', admin_controller.admin_article_delete_post); // kmg done
 
 //08   Récupérer la liste des users
 router.get('/users', admin_controller.admin_users_get ); // kmg done

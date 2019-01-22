@@ -173,7 +173,25 @@ exports.admin_article_delete_post = [
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_article_delete_post');
+
+            Article.findById(req.params.id_article).exec(function (err, article) {
+                if (err) {
+                    return res.status(500).send({ code: "500", message: "There was a problem finding the article in the database: " + err.message });
+                }
+                else if (article == null) {
+                    return res.status(404).send({ code: "404", message: "No article found." });
+                }
+                // la suppression des commentaires liés à cet article se fait dans le hook dans "../models/article.js"
+                //     "ArticleSchema.pre('remove' ..."
+                // le seul moyen de lancer ce même trigger remove est de faire ainsi. "article.remove()" 
+                // qui retourne une promise puis faire then()
+
+                article.remove().then(function (article_deleted) {
+                    res.status(200).send({  code: "200",  message: 'Suppression d\'article et des commentaires associés réussie.' });
+                 }).catch(function (err) {
+                    return res.status(500).send({ code: "500", message: "There was a problem deleting the article in the database: " + err.message });
+                 });
+            });
         }
     }
 ];

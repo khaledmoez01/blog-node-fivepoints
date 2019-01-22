@@ -1,6 +1,7 @@
 let mongoose = require('mongoose');
 let moment = require('moment');
 let User = require('./user');
+let Comment = require('./comment');
 
 let Schema = mongoose.Schema;
 
@@ -65,6 +66,26 @@ ArticleSchema.pre('save', function (next) {
 
         return next(); // everything is done, so let's call the next callback.
     });
+});
+
+ArticleSchema.pre('remove', { document: true }, function (next) {
+
+    Comment.deleteMany(
+        { comment_article: this._id},
+        (err, mongooseDeleteCommentsResult) => {
+            if (err) {
+                return next(err);
+            }
+
+            // mongooseDeleteCommentsResult est un objet qui contient ces trois clé
+            //     { n: 1, ok: 1, deletedCount: 1 }       
+            //         ok: 1 if no errors occurred
+            //         deletedCount: the number of documents deleted
+            //         n: the number of documents deleted. Equal to deletedCount.            
+            return next();
+        }
+    );
+    return next();
 });
 
 //Export model
