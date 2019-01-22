@@ -1171,6 +1171,44 @@
 					}
 				}
 			}
+		},
+		"/uploads/{image_name}": {
+			"get": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "image_name",
+						"required": true,
+						"description": "The image's name",
+						"type": "string"
+					}
+				],
+				"summary": "Récupération d'une image d'un article.",
+				"description": "Récupération d'une image d'un article depuis le dossier upload",
+				"produces": [
+					"image/png",
+					"image/jpeg"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "file"
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					}
+				}
+			}
 		}
 	},
 	"definitions": {
