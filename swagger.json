@@ -966,6 +966,112 @@
 					}
 				}
 			}
+		},
+		"/admin/user/{id_user}/update": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Modification d'un user.",
+				"description": "Modification d'un user par un administrateur authentifié.",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_user",
+						"required": true,
+						"description": "The user's id",
+						"type": "string"
+					},
+					{
+						"name": "user",
+						"in": "body",
+						"description": "les données du user à modifier.",
+						"schema": {
+							"properties": {
+								"first_name": {
+									"type": "string",
+									"description": "le nouveau prenom du user à modifier."
+								},
+								"family_name": {
+									"type": "string",
+									"description": "le nouveau nom de famille du user à modifier."
+								},
+								"role": {
+									"type": "string",
+									"description": "le nouveau role du user à modifier.",
+									"enum": [
+										"admin",
+										"simpleuser"
+									]
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails de l'user à peine modifié.",
+						"schema": {
+							"required": [
+								"user_role",
+								"_id",
+								"user_first_name",
+								"user_password",
+								"user_virtual_full_name",
+								"user_virtual_url",
+								"__v"
+							],
+							"properties": {
+								"_id": {
+									"type": "string",
+									"description": "l'objectID de l'user."
+								},
+								"id": {
+									"type": "string",
+									"description": "l'objectID de l'user."
+								},
+								"__v": {
+									"type": "integer"
+								},
+								"user_first_name": {
+									"type": "string",
+									"description": "le prenom du user."
+								},
+								"user_family_name": {
+									"type": "string",
+									"description": "le nom de famille du user."
+								},
+								"user_email": {
+									"type": "string",
+									"description": "le mail du user."
+								},
+								"user_virtual_full_name": {
+									"type": "string",
+									"description": "le nom complet du user."
+								},
+								"user_virtual_url": {
+									"type": "string",
+									"description": "l'url du user."
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "aucune donnée (title, content, image ou date ) n'a été envoyée dans body pour la mise à jour."
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
 		}
 	},
 	"definitions": {

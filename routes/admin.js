@@ -34,7 +34,7 @@ router.post('/user/create', admin_controller.admin_user_create_post);
 router.get('/user/:id_user', admin_controller.admin_user_get ); // kmg done
 
 //11   body(firstName, lastName, email, password, role)  - Modifier un user
-router.post('/user/:id_user/update', admin_controller.admin_user_update_post);
+router.post('/user/:id_user/update', admin_controller.admin_user_update_post); //kmg done
 
 //12   Pour chaque article écrit par :id_user, supprimer tous les commentaires de cet article. Puis supprimer tous les commentaires écrits par ce :id_user, puis supprimer ce :id_user
 router.post('/user/:id_user/delete', admin_controller.admin_user_delete_post);

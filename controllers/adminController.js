@@ -240,7 +240,54 @@ exports.admin_user_update_post = [
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_user_update_post');
+
+            let update_set = {};
+
+            if (req.body["first_name"])
+                update_set['user_first_name'] = req.body.first_name;
+
+            if (req.body["family_name"])
+                update_set['user_family_name'] = req.body.family_name;
+
+            if (req.body["role"])
+                update_set['user_role'] = req.body.role;
+
+            if (!Object.keys(update_set).length) {
+                // si req.body est vide, on retourne 204 qui veut dire
+                // 'tout est ok, mais tu n'as pas mis de données à mettre à jour'
+                // le status 204 est envoyé vide car meme si je mets un objet avec un message et un code
+                // dans le send je ne recevrai rien
+                return res.status(204).send();
+            }
+            else {
+                let query = {
+                    "_id": mongoose.Types.ObjectId(req.params.id_user)
+                };
+
+                let options = {
+                    new: true,                // retourné le nouvel objet modifié
+                    runValidators: true,      // retester de nouveau la validité des nouveaux champs
+                    fields: "-user_password"  // ne pas afficher le mot de passe à la sortie
+                };
+
+                User.findOneAndUpdate(
+                    query,
+                    { '$set': update_set },
+                    options,
+                    function (err, user){
+                        if (err) {
+                            return res.status(500).send({ code: "500", message: "There was a problem updating the user in the database: " + err.message });
+                        }
+                        else if (user == null) {
+                            return res.status(404).send({ code: "404", message: "No user found." });
+                        }
+
+                        res.status(200).send(user);
+
+                    }
+                );
+            }
+
         }
     }
 ];
