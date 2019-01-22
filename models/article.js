@@ -12,8 +12,8 @@ let ArticleSchema = new Schema(
     article_user: {
         type: Schema.Types.ObjectId,
         ref: 'User', //reference to the associated user
-        required: [true, 'article user is mandatory'] 
-    }, 
+        required: [true, 'article user is mandatory']
+    },
     article_content: {
         type: String,
         required: [true, 'article content is mandatory']

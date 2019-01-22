@@ -3,6 +3,7 @@ let User = require('../models/user');
 let Comment = require('../models/comment');
 let jwt = require('jsonwebtoken');
 let config = require('../config');
+let mongoose = require('mongoose');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -119,7 +120,50 @@ exports.admin_article_update_post = [
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_article_update_post');
+            let query = {
+                "_id": mongoose.Types.ObjectId(req.params.id_article)
+            };
+
+            let update_set = {};
+
+            if (req.body["title"])
+                update_set['article_title'] = req.body.title;
+
+            if (req.body["content"])
+                update_set['article_content'] = req.body.title;
+
+            if (req.body["date"])
+                update_set['article_date'] = req.body.date;
+
+            if (req.file)
+                if (req.file["path"])
+                    update_set['article_image'] = req.file.path;
+
+            if (!Object.keys(update_set).length) {
+                // si req.body est vide, on retourne 204 qui veut dire
+                // 'tout est ok, mais tu n'as pas mis de données à mettre à jour'
+                // le status 204 est envoyé vide car meme si je mets un objet avec un message et un code
+                // dans le send je ne recevrai rien
+                return res.status(204).send();
+            }
+            else {
+                Article.findOneAndUpdate(
+                    query,
+                    { '$set': update_set },
+                    { new: true, runValidators: true },
+                    function (err, article){
+                        if (err) {
+                            return res.status(500).send({ code: "500", message: "There was a problem updating the article in the database: " + err.message });
+                        }
+                        else if (article == null) {
+                            return res.status(404).send({ code: "404", message: "No article found." });
+                        }
+
+                        res.status(200).send(article);
+
+                    }
+                );
+            }
         }
     }
 ];
@@ -303,6 +347,17 @@ exports.admin_comment_delete_post = [
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
             res.send('NOT IMPLEMENTED: admin_comment_delete_post');
+        }
+    }
+];
+
+
+//18   body(path_image) recuperer l'image a partir d'un path
+exports.admin_article_get_image = [
+    verifyToken,
+    (token, req, res, next) => {
+        if (token && req.role == 'admin') {
+            res.send('NOT IMPLEMENTED: admin_article_get_image');
         }
     }
 ];

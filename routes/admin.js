@@ -11,7 +11,7 @@ router.get('/articles', admin_controller.admin_articles_get ); // kmg done
 
 
 //04   body(Titre, contenu, image) - Créer un nouvel article. l’auteur sera ce même utilisateur et les commentaires seront vides.
-//router.post('/article/create', admin_controller.admin_article_create_post); 
+//router.post('/article/create', admin_controller.admin_article_create_post);
 router.post('/article/create', upload.single('image'), admin_controller.admin_article_create_post ); // kmg done
 
 
@@ -19,13 +19,13 @@ router.post('/article/create', upload.single('image'), admin_controller.admin_ar
 router.get('/article/:id_article', admin_controller.admin_article_get ); // kmg done
 
 //06   body(Titre, contenu, image, date) - Mettre à jour un article mais pas ses commentaires qui seront pris en compte plus tard
-router.post('/article/:id_article/update', upload.single('image'), admin_controller.admin_article_update_post); // kmg en cours
+router.post('/article/:id_article/update', upload.single('image'), admin_controller.admin_article_update_post); // kmg done
 
 //07   Suppression des commentaires d’un article puis suppression d’un article
 router.post('/article/:id_article/delete', admin_controller.admin_article_delete_post);
 
 //08   Récupérer la liste des users
-router.get('/users', admin_controller.admin_users_get ); // kmg done  
+router.get('/users', admin_controller.admin_users_get ); // kmg done
 
 //09   body(firstName, lastName, email, password, role) - Création d’un user
 router.post('/user/create', admin_controller.admin_user_create_post);
@@ -55,5 +55,8 @@ router.post('/comment/:id_comment/update', admin_controller.admin_comment_update
 
 //17   Supprimer un commentaire
 router.post('/comment/:id_comment/delete', admin_controller.admin_comment_delete_post);
+
+//18   recuperer l'image a partir d'un path
+router.get('/article/image/:path_image/', admin_controller.admin_article_get_image);
 
 module.exports = router;

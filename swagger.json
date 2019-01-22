@@ -848,6 +848,124 @@
 					}
 				}
 			}
+		},
+		"/admin/article/{id_article}/update": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Modification d'un article.",
+				"description": "Modification d'un article par un administrateur authentifié.",
+				"consumes": [
+					"multipart/form-data"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_article",
+						"required": true,
+						"description": "The article's id",
+						"type": "string"
+					},
+					{
+						"in": "formData",
+						"name": "title",
+						"type": "string",
+						"description": "le nouveau titre de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "content",
+						"type": "string",
+						"description": "le nouveau contenu de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "image",
+						"type": "file",
+						"description": "la nouvelle image de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "date",
+						"type": "string",
+						"format": "date-time",
+						"description": "la nouvelle date de création de l'article à modifier."
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails de l'article à peine modifié.",
+						"schema": {
+							"required": [
+								"article_image",
+								"_id",
+								"article_title",
+								"article_content",
+								"article_date",
+								"article_user",
+								"__v"
+							],
+							"properties": {
+								"article_title": {
+									"type": "string",
+									"description": "le titre de l'article."
+								},
+								"article_content": {
+									"type": "string",
+									"description": "le contenu de l'article."
+								},
+								"article_image": {
+									"type": "string",
+									"description": "l'image associée à l'article."
+								},
+								"article_date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "date de création de l'article."
+								},
+								"article_user": {
+									"type": "string",
+									"description": "l'objectID de l'auteur."
+								},
+								"_id": {
+									"type": "string",
+									"description": "l'objectID de l'article."
+								},
+								"id": {
+									"type": "string",
+									"description": "l'objectID de l'article."
+								},
+								"article_virtual_content_introduction": {
+									"type": "string",
+									"description": "les 15 premières lettres du contenu de l'article créé."
+								},
+								"article_virtual_url": {
+									"type": "string",
+									"description": "l'url interne de l'article créé."
+								},
+								"__v": {
+									"type": "integer"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "aucune donnée (title, content, image ou date ) n'a été envoyée dans body pour la mise à jour."
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
 		}
 	},
 	"definitions": {
