@@ -274,57 +274,6 @@
 				}
 			}
 		},
-		"/admin/users": {
-			"get": {
-				"security": [
-					{
-						"Bearer_admin": []
-					}
-				],
-				"summary": "Récupérer la liste de tous les utilisateurs.",
-				"description": "Récupérer la liste de tous les utilisateurs par un administrateur authentifié",
-				"responses": {
-					"200": {
-						"description": "les détails de tous les utilisateurs.",
-						"schema": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"_id": {
-										"type": "string"
-									},
-									"user_first_name": {
-										"type": "string"
-									},
-									"user_family_name": {
-										"type": "string"
-									},
-									"user_email": {
-										"type": "string"
-									},
-									"user_virtual_full_name": {
-										"type": "string"
-									},
-									"user_virtual_url": {
-										"type": "string"
-									},
-									"id": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					},
-					"403": {
-						"$ref": "#/responses/Todos403ErrorResponse"
-					},
-					"500": {
-						"$ref": "#/responses/Standard500ErrorResponse"
-					}
-				}
-			}
-		},
 		"/admin/article/{id_article}": {
 			"get": {
 				"security": [
@@ -445,78 +394,158 @@
 				}
 			}
 		},
-		"/admin/comment/create": {
+		"/admin/article/{id_article}/update": {
 			"post": {
 				"security": [
 					{
 						"Bearer_admin": []
 					}
 				],
-				"summary": "Création d'un commentaire lié à un article.",
+				"summary": "Modification d'un article.",
+				"description": "Modification d'un article par un administrateur authentifié.",
+				"consumes": [
+					"multipart/form-data"
+				],
 				"parameters": [
 					{
-						"name": "comment",
-						"in": "body",
-						"description": "les champs du commentaire à créer.",
-						"schema": {
-							"required": [
-								"content",
-								"article"
-							],
-							"properties": {
-								"content": {
-									"type": "string",
-									"description": "contenu du commentaire à créer."
-								},
-								"article": {
-									"type": "string",
-									"description": "id de l'article lié au commentaire à créer."
-								},
-								"date": {
-									"type": "string",
-									"format": "date-time",
-									"description": "date de création du commentaire."
-								}
-							}
-						}
+						"in": "path",
+						"name": "id_article",
+						"required": true,
+						"description": "The article's id",
+						"type": "string"
+					},
+					{
+						"in": "formData",
+						"name": "title",
+						"type": "string",
+						"description": "le nouveau titre de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "content",
+						"type": "string",
+						"description": "le nouveau contenu de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "image",
+						"type": "file",
+						"description": "la nouvelle image de l'article à modifier."
+					},
+					{
+						"in": "formData",
+						"name": "date",
+						"type": "string",
+						"format": "date-time",
+						"description": "la nouvelle date de création de l'article à modifier."
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "les détails du commentaire à peine créé.",
+						"description": "les détails de l'article à peine modifié.",
 						"schema": {
 							"required": [
-								"comment_content",
+								"article_image",
 								"_id",
-								"comment_user",
-								"comment_date",
-								"comment_article",
+								"article_title",
+								"article_content",
+								"article_date",
+								"article_user",
 								"__v"
 							],
 							"properties": {
-								"comment_article": {
+								"article_title": {
 									"type": "string",
-									"description": "l'id de l'article lié au commentaire."
+									"description": "le titre de l'article."
 								},
-								"comment_content": {
+								"article_content": {
 									"type": "string",
-									"description": "le contenu du contenu."
+									"description": "le contenu de l'article."
 								},
-								"comment_date": {
+								"article_image": {
+									"type": "string",
+									"description": "l'image associée à l'article."
+								},
+								"article_date": {
 									"type": "string",
 									"format": "date-time",
-									"description": "date de création du commentaire."
+									"description": "date de création de l'article."
 								},
-								"comment_user": {
+								"article_user": {
 									"type": "string",
-									"description": "l'objectID de l'auteur du commentaire."
+									"description": "l'objectID de l'auteur."
 								},
 								"_id": {
 									"type": "string",
-									"description": "l'objectID du commentaire."
+									"description": "l'objectID de l'article."
+								},
+								"id": {
+									"type": "string",
+									"description": "l'objectID de l'article."
+								},
+								"article_virtual_content_introduction": {
+									"type": "string",
+									"description": "les 15 premières lettres du contenu de l'article créé."
+								},
+								"article_virtual_url": {
+									"type": "string",
+									"description": "l'url interne de l'article créé."
 								},
 								"__v": {
 									"type": "integer"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "aucune donnée (title, content, image ou date ) n'a été envoyée dans body pour la mise à jour."
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/admin/article/{id_article}/delete": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_article",
+						"required": true,
+						"description": "The article's id to delete",
+						"type": "string"
+					}
+				],
+				"summary": "supprimer un article et ses commentaires.",
+				"description": "supprimer un article et ses commentaires par un utilisateur authentifié.",
+				"responses": {
+					"200": {
+						"description": "suppression réussie",
+						"schema": {
+							"properties": {
+								"code": {
+									"type": "string",
+									"enum": [
+										"200"
+									]
+								},
+								"message": {
+									"type": "string",
+									"enum": [
+										"Suppression d'article et des commentaires associés réussie."
+									]
 								}
 							}
 						}
@@ -526,6 +555,57 @@
 					},
 					"404": {
 						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/admin/users": {
+			"get": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Récupérer la liste de tous les utilisateurs.",
+				"description": "Récupérer la liste de tous les utilisateurs par un administrateur authentifié",
+				"responses": {
+					"200": {
+						"description": "les détails de tous les utilisateurs.",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"_id": {
+										"type": "string"
+									},
+									"user_first_name": {
+										"type": "string"
+									},
+									"user_family_name": {
+										"type": "string"
+									},
+									"user_email": {
+										"type": "string"
+									},
+									"user_virtual_full_name": {
+										"type": "string"
+									},
+									"user_virtual_url": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
 					},
 					"500": {
 						"$ref": "#/responses/Standard500ErrorResponse"
@@ -645,6 +725,250 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/admin/user/{id_user}/update": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Modification d'un user.",
+				"description": "Modification d'un user par un administrateur authentifié.",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_user",
+						"required": true,
+						"description": "The user's id",
+						"type": "string"
+					},
+					{
+						"name": "user",
+						"in": "body",
+						"description": "les données du user à modifier.",
+						"schema": {
+							"properties": {
+								"first_name": {
+									"type": "string",
+									"description": "le nouveau prenom du user à modifier."
+								},
+								"family_name": {
+									"type": "string",
+									"description": "le nouveau nom de famille du user à modifier."
+								},
+								"role": {
+									"type": "string",
+									"description": "le nouveau role du user à modifier.",
+									"enum": [
+										"admin",
+										"simpleuser"
+									]
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails de l'user à peine modifié.",
+						"schema": {
+							"required": [
+								"user_role",
+								"_id",
+								"user_first_name",
+								"user_password",
+								"user_virtual_full_name",
+								"user_virtual_url",
+								"__v"
+							],
+							"properties": {
+								"_id": {
+									"type": "string",
+									"description": "l'objectID de l'user."
+								},
+								"id": {
+									"type": "string",
+									"description": "l'objectID de l'user."
+								},
+								"__v": {
+									"type": "integer"
+								},
+								"user_first_name": {
+									"type": "string",
+									"description": "le prenom du user."
+								},
+								"user_family_name": {
+									"type": "string",
+									"description": "le nom de famille du user."
+								},
+								"user_email": {
+									"type": "string",
+									"description": "le mail du user."
+								},
+								"user_virtual_full_name": {
+									"type": "string",
+									"description": "le nom complet du user."
+								},
+								"user_virtual_url": {
+									"type": "string",
+									"description": "l'url du user."
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "aucune donnée (nom, prenom ou role) n'a été envoyée dans body pour la mise à jour."
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/admin/user/{id_user}/delete": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_user",
+						"required": true,
+						"description": "The user's id to delete",
+						"type": "string"
+					}
+				],
+				"summary": "supprimer un user, ses commentaires, ses articles et les commentaires de ces derniers.",
+				"description": "supprimer un user, ses commentaires, ses articles et les commentaires de ces derniers par un utilisateur authentifié.",
+				"responses": {
+					"200": {
+						"description": "suppression réussie",
+						"schema": {
+							"properties": {
+								"code": {
+									"type": "string",
+									"enum": [
+										"200"
+									]
+								},
+								"message": {
+									"type": "string",
+									"enum": [
+										"Suppression du user, des articles et leurs commentaires associés écrits par ce user et des commentaires écrits par ce user réussie."
+									]
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/admin/comment/create": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Création d'un commentaire lié à un article.",
+				"parameters": [
+					{
+						"name": "comment",
+						"in": "body",
+						"description": "les champs du commentaire à créer.",
+						"schema": {
+							"required": [
+								"content",
+								"article"
+							],
+							"properties": {
+								"content": {
+									"type": "string",
+									"description": "contenu du commentaire à créer."
+								},
+								"article": {
+									"type": "string",
+									"description": "id de l'article lié au commentaire à créer."
+								},
+								"date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "date de création du commentaire."
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails du commentaire à peine créé.",
+						"schema": {
+							"required": [
+								"comment_content",
+								"_id",
+								"comment_user",
+								"comment_date",
+								"comment_article",
+								"__v"
+							],
+							"properties": {
+								"comment_article": {
+									"type": "string",
+									"description": "l'id de l'article lié au commentaire."
+								},
+								"comment_content": {
+									"type": "string",
+									"description": "le contenu du contenu."
+								},
+								"comment_date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "date de création du commentaire."
+								},
+								"comment_user": {
+									"type": "string",
+									"description": "l'objectID de l'auteur du commentaire."
+								},
+								"_id": {
+									"type": "string",
+									"description": "l'objectID du commentaire."
+								},
+								"__v": {
+									"type": "integer"
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
 					}
 				}
 			}
@@ -849,230 +1173,6 @@
 				}
 			}
 		},
-		"/admin/article/{id_article}/update": {
-			"post": {
-				"security": [
-					{
-						"Bearer_admin": []
-					}
-				],
-				"summary": "Modification d'un article.",
-				"description": "Modification d'un article par un administrateur authentifié.",
-				"consumes": [
-					"multipart/form-data"
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id_article",
-						"required": true,
-						"description": "The article's id",
-						"type": "string"
-					},
-					{
-						"in": "formData",
-						"name": "title",
-						"type": "string",
-						"description": "le nouveau titre de l'article à modifier."
-					},
-					{
-						"in": "formData",
-						"name": "content",
-						"type": "string",
-						"description": "le nouveau contenu de l'article à modifier."
-					},
-					{
-						"in": "formData",
-						"name": "image",
-						"type": "file",
-						"description": "la nouvelle image de l'article à modifier."
-					},
-					{
-						"in": "formData",
-						"name": "date",
-						"type": "string",
-						"format": "date-time",
-						"description": "la nouvelle date de création de l'article à modifier."
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "les détails de l'article à peine modifié.",
-						"schema": {
-							"required": [
-								"article_image",
-								"_id",
-								"article_title",
-								"article_content",
-								"article_date",
-								"article_user",
-								"__v"
-							],
-							"properties": {
-								"article_title": {
-									"type": "string",
-									"description": "le titre de l'article."
-								},
-								"article_content": {
-									"type": "string",
-									"description": "le contenu de l'article."
-								},
-								"article_image": {
-									"type": "string",
-									"description": "l'image associée à l'article."
-								},
-								"article_date": {
-									"type": "string",
-									"format": "date-time",
-									"description": "date de création de l'article."
-								},
-								"article_user": {
-									"type": "string",
-									"description": "l'objectID de l'auteur."
-								},
-								"_id": {
-									"type": "string",
-									"description": "l'objectID de l'article."
-								},
-								"id": {
-									"type": "string",
-									"description": "l'objectID de l'article."
-								},
-								"article_virtual_content_introduction": {
-									"type": "string",
-									"description": "les 15 premières lettres du contenu de l'article créé."
-								},
-								"article_virtual_url": {
-									"type": "string",
-									"description": "l'url interne de l'article créé."
-								},
-								"__v": {
-									"type": "integer"
-								}
-							}
-						}
-					},
-					"204": {
-						"description": "aucune donnée (title, content, image ou date ) n'a été envoyée dans body pour la mise à jour."
-					},
-					"403": {
-						"$ref": "#/responses/Todos403ErrorResponse"
-					},
-					"404": {
-						"$ref": "#/responses/Standard404ErrorResponse"
-					},
-					"500": {
-						"$ref": "#/responses/Standard500ErrorResponse"
-					}
-				}
-			}
-		},
-		"/admin/user/{id_user}/update": {
-			"post": {
-				"security": [
-					{
-						"Bearer_admin": []
-					}
-				],
-				"summary": "Modification d'un user.",
-				"description": "Modification d'un user par un administrateur authentifié.",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id_user",
-						"required": true,
-						"description": "The user's id",
-						"type": "string"
-					},
-					{
-						"name": "user",
-						"in": "body",
-						"description": "les données du user à modifier.",
-						"schema": {
-							"properties": {
-								"first_name": {
-									"type": "string",
-									"description": "le nouveau prenom du user à modifier."
-								},
-								"family_name": {
-									"type": "string",
-									"description": "le nouveau nom de famille du user à modifier."
-								},
-								"role": {
-									"type": "string",
-									"description": "le nouveau role du user à modifier.",
-									"enum": [
-										"admin",
-										"simpleuser"
-									]
-								}
-							}
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "les détails de l'user à peine modifié.",
-						"schema": {
-							"required": [
-								"user_role",
-								"_id",
-								"user_first_name",
-								"user_password",
-								"user_virtual_full_name",
-								"user_virtual_url",
-								"__v"
-							],
-							"properties": {
-								"_id": {
-									"type": "string",
-									"description": "l'objectID de l'user."
-								},
-								"id": {
-									"type": "string",
-									"description": "l'objectID de l'user."
-								},
-								"__v": {
-									"type": "integer"
-								},
-								"user_first_name": {
-									"type": "string",
-									"description": "le prenom du user."
-								},
-								"user_family_name": {
-									"type": "string",
-									"description": "le nom de famille du user."
-								},
-								"user_email": {
-									"type": "string",
-									"description": "le mail du user."
-								},
-								"user_virtual_full_name": {
-									"type": "string",
-									"description": "le nom complet du user."
-								},
-								"user_virtual_url": {
-									"type": "string",
-									"description": "l'url du user."
-								}
-							}
-						}
-					},
-					"204": {
-						"description": "aucune donnée (nom, prenom ou role) n'a été envoyée dans body pour la mise à jour."
-					},
-					"403": {
-						"$ref": "#/responses/Todos403ErrorResponse"
-					},
-					"404": {
-						"$ref": "#/responses/Standard404ErrorResponse"
-					},
-					"500": {
-						"$ref": "#/responses/Standard500ErrorResponse"
-					}
-				}
-			}
-		},
 		"/admin/comment/{id_comment}/update": {
 			"post": {
 				"security": [
@@ -1172,46 +1272,8 @@
 				}
 			}
 		},
-		"/uploads/{image_name}": {
-			"get": {
-				"security": [
-					{
-						"Bearer_admin": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "image_name",
-						"required": true,
-						"description": "The image's name",
-						"type": "string"
-					}
-				],
-				"summary": "Récupération d'une image d'un article.",
-				"description": "Récupération d'une image d'un article depuis le dossier upload",
-				"produces": [
-					"image/png",
-					"image/jpeg"
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"schema": {
-							"type": "file"
-						}
-					},
-					"403": {
-						"$ref": "#/responses/Todos403ErrorResponse"
-					},
-					"404": {
-						"$ref": "#/responses/Standard404ErrorResponse"
-					}
-				}
-			}
-		},
 		"/admin/comment/{id_comment}/delete": {
-			"get": {
+			"post": {
 				"security": [
 					{
 						"Bearer_admin": []
@@ -1256,6 +1318,44 @@
 					},
 					"500": {
 						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/uploads/{image_name}": {
+			"get": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "image_name",
+						"required": true,
+						"description": "The image's name",
+						"type": "string"
+					}
+				],
+				"summary": "Récupération d'une image d'un article.",
+				"description": "Récupération d'une image d'un article depuis le dossier upload",
+				"produces": [
+					"image/png",
+					"image/jpeg"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "file"
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
 					}
 				}
 			}

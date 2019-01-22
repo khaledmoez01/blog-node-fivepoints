@@ -37,7 +37,7 @@ router.get('/user/:id_user', admin_controller.admin_user_get ); // kmg done
 router.post('/user/:id_user/update', admin_controller.admin_user_update_post); //kmg done
 
 //12   Pour chaque article écrit par :id_user, supprimer tous les commentaires de cet article. Puis supprimer tous les commentaires écrits par ce :id_user, puis supprimer ce :id_user
-router.post('/user/:id_user/delete', admin_controller.admin_user_delete_post);
+router.post('/user/:id_user/delete', admin_controller.admin_user_delete_post); // kmg done
 
 //13   Récupérer la liste des comments
 router.get('/comments', admin_controller.admin_comments_get );  // kmg done

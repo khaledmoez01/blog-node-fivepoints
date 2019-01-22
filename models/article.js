@@ -1,7 +1,5 @@
 let mongoose = require('mongoose');
 let moment = require('moment');
-let User = require('./user');
-let Comment = require('./comment');
 
 let Schema = mongoose.Schema;
 
@@ -20,10 +18,6 @@ let ArticleSchema = new Schema(
         type: String,
         required: [true, 'article content is mandatory']
     },
-    /*article_comments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Comment'
-    }],*/ // kmg commentairechange
     article_image: {
         type: String,
         default: ''
@@ -54,7 +48,12 @@ ArticleSchema
 });
 
 ArticleSchema.pre('save', function (next) {
-    User.findById(this.article_user).exec(function (err, user) {
+    // on met le require ici, car sinon on aurait l'erreer User.findById is not a function:
+    // la grande trouvaille de Chehir!!!
+    // on a cette erreur, car le User ne connait pas le "this", pour parer a cela, utiliser 'use strict' a voir
+    let User = require('./user');
+
+    User.findById(this.article_user, function (err, user) {
         if (err) {
             return next(err);
         }
@@ -68,7 +67,10 @@ ArticleSchema.pre('save', function (next) {
     });
 });
 
-ArticleSchema.pre('remove', { document: true }, function (next) {
+
+ArticleSchema.pre('remove', { document: true, query: false }, function (next) {
+
+    let Comment = require('./comment');
 
     Comment.deleteMany(
         { comment_article: this._id},
@@ -78,10 +80,10 @@ ArticleSchema.pre('remove', { document: true }, function (next) {
             }
 
             // mongooseDeleteCommentsResult est un objet qui contient ces trois clé
-            //     { n: 1, ok: 1, deletedCount: 1 }       
-            //         ok: 1 if no errors occurred
+            //     { n: 1, ok: 1, deletedCount: 1 }
+             //         ok: 1 if no errors occurred
             //         deletedCount: the number of documents deleted
-            //         n: the number of documents deleted. Equal to deletedCount.            
+            //         n: the number of documents deleted. Equal to deletedCount.
             return next();
         }
     );
@@ -90,3 +92,6 @@ ArticleSchema.pre('remove', { document: true }, function (next) {
 
 //Export model
 module.exports = mongoose.model('Article', ArticleSchema);
+
+
+'use strict'

@@ -311,10 +311,25 @@ exports.admin_user_update_post = [
 
 //12   Pour chaque article écrit par :id_user, supprimer tous ses commentaires. Puis supprimer tous les commentaires écrits par ce :id_user, puis supprimer ce user
 exports.admin_user_delete_post = [
+
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_user_delete_post');
+
+            User.findById(req.params.id_user).exec(function (err, user) {
+                if (err) {
+                    return res.status(500).send({ code: "500", message: "There was a problem finding the user in the database: " + err.message });
+                }
+                else if (user == null) {
+                    return res.status(404).send({ code: "404", message: "No user found for delete." });
+                }
+
+                user.remove().then(function (user_deleted) {
+                    res.status(200).send({  code: "200",  message: 'Suppression du user, des articles et leurs commentaires associés écrits par ce user et des commentaires écrits par ce user réussie.' });
+                 }).catch(function (err) {
+                    return res.status(500).send({ code: "500", message: "There was a problem deleting the user in the database: " + err.message });
+                 });
+            });
         }
     }
 ];
