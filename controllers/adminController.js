@@ -237,6 +237,7 @@ exports.admin_user_get = [
 
 //11   body(firstName, lastName, email, password, role)  - Modifier un user
 exports.admin_user_update_post = [
+    sanitizeBody('*').trim().escape(),
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
@@ -265,7 +266,7 @@ exports.admin_user_update_post = [
                 };
 
                 let options = {
-                    new: true,                // retourné le nouvel objet modifié
+                    new: true,                // retourner le nouvel objet modifié
                     runValidators: true,      // retester de nouveau la validité des nouveaux champs
                     fields: "-user_password"  // ne pas afficher le mot de passe à la sortie
                 };
@@ -283,11 +284,9 @@ exports.admin_user_update_post = [
                         }
 
                         res.status(200).send(user);
-
                     }
                 );
             }
-
         }
     }
 ];
@@ -380,10 +379,52 @@ exports.admin_comment_get = [
 
 //16   body(Contenu, date)  -  Modifier un commentaire
 exports.admin_comment_update_post = [
+    sanitizeBody('content').trim().escape(),
+    sanitizeBody('date').toDate(),
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_comment_update_post');
+            let update_set = {};
+
+            if (req.body["content"])
+                update_set['comment_content'] = req.body.content;
+
+            if (req.body["date"])
+                update_set['comment_date'] = req.body.date;
+
+            if (!Object.keys(update_set).length) {
+                // si req.body est vide, on retourne 204 qui veut dire
+                // 'tout est ok, mais tu n'as pas mis de données à mettre à jour'
+                // le status 204 est envoyé vide car meme si je mets un objet avec un message et un code
+                // dans le send je ne recevrai rien
+                return res.status(204).send();
+            }
+            else {
+                let query = {
+                    "_id": mongoose.Types.ObjectId(req.params.id_comment)
+                };
+
+                let options = {
+                    new: true,                // retourner le nouvel objet modifié
+                    runValidators: true,      // retester de nouveau la validité des nouveaux champs
+                };
+
+                Comment.findOneAndUpdate(
+                    query,
+                    { '$set': update_set },
+                    options,
+                    function (err, comment){
+                        if (err) {
+                            return res.status(500).send({ code: "500", message: "There was a problem updating the comment in the database: " + err.message });
+                        }
+                        else if (comment == null) {
+                            return res.status(404).send({ code: "404", message: "No comment found." });
+                        }
+
+                        res.status(200).send(comment);
+                    }
+                );
+            }
         }
     }
 ];

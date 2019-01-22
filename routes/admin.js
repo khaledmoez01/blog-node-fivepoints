@@ -51,7 +51,7 @@ router.post('/comment/create', admin_controller.admin_comment_create_post); // k
 router.get('/comment/:id_comment', admin_controller.admin_comment_get );// kmg done
 
 //16   body(Contenu, date)  -  Modifier un commentaire
-router.post('/comment/:id_comment/update', admin_controller.admin_comment_update_post);
+router.post('/comment/:id_comment/update', admin_controller.admin_comment_update_post); //kmg done
 
 //17   Supprimer un commentaire
 router.post('/comment/:id_comment/delete', admin_controller.admin_comment_delete_post);

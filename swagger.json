@@ -1059,7 +1059,106 @@
 						}
 					},
 					"204": {
-						"description": "aucune donnée (title, content, image ou date ) n'a été envoyée dans body pour la mise à jour."
+						"description": "aucune donnée (nom, prenom ou role) n'a été envoyée dans body pour la mise à jour."
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/admin/comment/{id_comment}/update": {
+			"post": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Modification d'un commentaire.",
+				"description": "Modification d'un commentaire par un administrateur authentifié.",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_comment",
+						"required": true,
+						"description": "The comment's id",
+						"type": "string"
+					},
+					{
+						"name": "comment",
+						"in": "body",
+						"description": "les données du commentaire à modifier.",
+						"schema": {
+							"properties": {
+								"content": {
+									"type": "string",
+									"description": "le nouveau contenu du commentaire à modifier."
+								},
+								"date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "la nouvelle date du commentaire à modifier."
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails du commentaire à peine modifié.",
+						"schema": {
+							"required": [
+								"comment_content",
+								"_id",
+								"comment_user",
+								"comment_date",
+								"comment_article",
+								"comment_virtual_url",
+								"__v"
+							],
+							"properties": {
+								"_id": {
+									"type": "string",
+									"description": "l'objectID du commentaire."
+								},
+								"id": {
+									"type": "string",
+									"description": "l'objectID du commentaire."
+								},
+								"__v": {
+									"type": "integer"
+								},
+								"comment_content": {
+									"type": "string",
+									"description": "le contenu du commentaire."
+								},
+								"comment_user": {
+									"type": "string",
+									"description": "le user lié au commentaire."
+								},
+								"comment_date": {
+									"type": "string",
+									"description": "la date du commentaire."
+								},
+								"comment_article": {
+									"type": "string",
+									"description": "l'article lié au commentaire."
+								},
+								"comment_virtual_url": {
+									"type": "string",
+									"description": "l'url du commentaire."
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "aucune donnée (date, content) n'a été envoyée dans body pour la mise à jour."
 					},
 					"403": {
 						"$ref": "#/responses/Todos403ErrorResponse"
