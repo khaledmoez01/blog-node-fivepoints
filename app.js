@@ -33,7 +33,15 @@ app.use(cookieParser());
 
 app.use(compression()); //Compress all routes
 
-app.use(express.static(path.join(__dirname, 'public')));
+// avec la mise de "/<nom_du_dossier_public>" comme premier argument (ici '/public'),
+// en tapant directement dans firefox 
+//    http://localhost:3000/public/images/20190121120157_petitchat.jpg
+// on obtient l'image. (à supposer qu'elle existe dans le dossier 'public/images/' bien sur).
+// si on ne mentionne pas ce premier argument , par exemple en mettant ici
+//    app.use( express.static(path.join(__dirname, 'public')));
+// dans ce cas, pour avoir l'image dans firefox, il faudrait virer "/<nom_du_dossier_public>", ici on aurait
+//    http://localhost:3000/images/20190121120157_petitchat.jpg
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
