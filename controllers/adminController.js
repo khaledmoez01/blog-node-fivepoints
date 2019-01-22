@@ -151,7 +151,7 @@ exports.admin_article_update_post = [
                     query,
                     { '$set': update_set },
                     { new: true, runValidators: true },
-                    function (err, article){
+                    function (err, article) {
                         if (err) {
                             return res.status(500).send({ code: "500", message: "There was a problem updating the article in the database: " + err.message });
                         }
@@ -275,7 +275,7 @@ exports.admin_user_update_post = [
                     query,
                     { '$set': update_set },
                     options,
-                    function (err, user){
+                    function (err, user) {
                         if (err) {
                             return res.status(500).send({ code: "500", message: "There was a problem updating the user in the database: " + err.message });
                         }
@@ -361,18 +361,18 @@ exports.admin_comment_get = [
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
             Comment.findById(req.params.id_comment)
-            .populate('comment_user', 'user_first_name user_family_name ')
-            .populate('comment_article', 'article_title article_content ')
-            .exec(function (err, comment) {
-                if (err) {
-                    return res.status(500).send({ code: "500", message: "There was a problem finding a comment from the database: " + err.message, });
-                }
-                if (comment == null) { // No results.{
-                    return res.status(404).send({ code: "404", message: "No comment found matching the req.body.id_comment in the database" });
-                }
-                // Successful, so render.
-                res.status(200).send(comment);
-            });
+                .populate('comment_user', 'user_first_name user_family_name ')
+                .populate('comment_article', 'article_title article_content ')
+                .exec(function (err, comment) {
+                    if (err) {
+                        return res.status(500).send({ code: "500", message: "There was a problem finding a comment from the database: " + err.message, });
+                    }
+                    if (comment == null) { // No results.{
+                        return res.status(404).send({ code: "404", message: "No comment found matching the req.body.id_comment in the database" });
+                    }
+                    // Successful, so render.
+                    res.status(200).send(comment);
+                });
         }
     }
 ];
@@ -413,7 +413,7 @@ exports.admin_comment_update_post = [
                     query,
                     { '$set': update_set },
                     options,
-                    function (err, comment){
+                    function (err, comment) {
                         if (err) {
                             return res.status(500).send({ code: "500", message: "There was a problem updating the comment in the database: " + err.message });
                         }
@@ -434,18 +434,16 @@ exports.admin_comment_delete_post = [
     verifyToken,
     (token, req, res, next) => {
         if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_comment_delete_post');
-        }
-    }
-];
-
-
-//18   body(path_image) recuperer l'image a partir d'un path
-exports.admin_article_get_image = [
-    verifyToken,
-    (token, req, res, next) => {
-        if (token && req.role == 'admin') {
-            res.send('NOT IMPLEMENTED: admin_article_get_image');
+            // Delete object and redirect to the list of book instances.
+            Comment.findByIdAndRemove(req.params.id_comment, (err, comment) => {
+                if (err) {
+                    return res.status(500).send({ code: "500", message: "There was a problem deleting the comment in the database: " + err.message });
+                }
+                else if (comment == null) {
+                    return res.status(404).send({ code: "404", message: "No comment found." });
+                }
+                res.status(200).send({  code: "200",  message: 'Suppression de commentaire réussie.' });
+            })
         }
     }
 ];

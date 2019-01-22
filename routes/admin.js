@@ -54,9 +54,7 @@ router.get('/comment/:id_comment', admin_controller.admin_comment_get );// kmg d
 router.post('/comment/:id_comment/update', admin_controller.admin_comment_update_post); //kmg done
 
 //17   Supprimer un commentaire
-router.post('/comment/:id_comment/delete', admin_controller.admin_comment_delete_post);
+router.post('/comment/:id_comment/delete', admin_controller.admin_comment_delete_post); // kmg done
 
-//18   recuperer l'image a partir d'un path
-router.get('/article/image/:path_image/', admin_controller.admin_article_get_image);
 
 module.exports = router;

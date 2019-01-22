@@ -1209,6 +1209,56 @@
 					}
 				}
 			}
+		},
+		"/admin/comment/{id_comment}/delete": {
+			"get": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_comment",
+						"required": true,
+						"description": "The comment's id to delete",
+						"type": "string"
+					}
+				],
+				"summary": "supprimer un commentaire.",
+				"description": "supprimer un commentaire par un utilisateur authentifié.",
+				"responses": {
+					"200": {
+						"description": "suppression réussie",
+						"schema": {
+							"properties": {
+								"code": {
+									"type": "string",
+									"enum": [
+										"200"
+									]
+								},
+								"message": {
+									"type": "string",
+									"enum": [
+										"Suppression de commentaire réussie."
+									]
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
 		}
 	},
 	"definitions": {
