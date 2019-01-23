@@ -22,10 +22,11 @@ function verifyToken(req, res, next) {
     jwt.verify(token_split, config.secret, function (err, decoded) {
         if (err)
             return res.status(403).send({ code: "403", auth: false, token: null, message: 'Failed to authenticate token.' });
+        else if (decoded.role != 'simpleuser')
+            return res.status(403).send({ code: "403", auth: false, token: null, message: 'Access denied' });
 
         // if everything good, save to request for use in other routes
         req.userId = decoded.id;
-        req.role = decoded.role;
         next(token);
     });
 }
@@ -34,7 +35,7 @@ function verifyToken(req, res, next) {
 exports.user_articles_get = [
     verifyToken,
     (token, req, res, next) => {        
-        if (token && req.role == 'simpleuser') {
+        if (token) {
             Article.find({})
                 .select(' -article_image ') // le '-' sert à exclure ces donnes
                 .populate('article_user', 'user_first_name user_family_name ')
@@ -52,7 +53,7 @@ exports.user_articles_get = [
 exports.user_article_get = [
     verifyToken,
     (token, req, res, next) => {        
-        if (token && req.role == 'simpleuser') {
+        if (token) {
             async.parallel(
                 {
                     article: function (callback) {
@@ -82,7 +83,7 @@ exports.user_article_get = [
 exports.user_get = [
     verifyToken,
     (token, req, res, next) => {        
-        if (token && req.role == 'simpleuser') {
+        if (token) {
             async.parallel(
                 {
                     user: function (callback) {
@@ -115,7 +116,7 @@ exports.user_comment_create_post = [
     sanitizeBody('date').toDate(),
     verifyToken,
     (token, req, res, next) => {        
-        if (token && req.role == 'simpleuser') {
+        if (token) {
             Article.findById(req.body.article).exec(function (err, article) {
                 if (err) {
                     return res.status(500).send({ code: "500", message: "There was a problem finding an article related to the comment to create to the database: " + err.message, });

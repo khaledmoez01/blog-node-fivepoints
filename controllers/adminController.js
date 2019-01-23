@@ -22,10 +22,11 @@ function verifyToken(req, res, next) {
     jwt.verify(token_split, config.secret, function (err, decoded) {
         if (err)
             return res.status(403).send({ code: "403", auth: false, token: null, message: 'Failed to authenticate token.' });
+        else if (decoded.role != 'admin' )
+            return res.status(403).send({ code: "403", auth: false, token: null, message: 'Access Denied.' });
 
         // if everything good, save to request for use in other routes
         req.userId = decoded.id;
-        req.role = decoded.role;
         next(token);
     });
 }
@@ -34,7 +35,7 @@ function verifyToken(req, res, next) {
 exports.admin_articles_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             Article.find({}/*, 'article_title article_virtual_content_introduction'*/)
                 // kmg commentairechange
                 //.select('-article_comments -article_image ') // le '-' sert à exclure ces donnes
@@ -60,7 +61,7 @@ exports.admin_article_create_post = [
 
     (token, req, res, next) => {
 
-        if (token && req.role == 'admin') {
+        if (token) {
 
             // Create an article object with escaped and trimmed data.
             let article = new Article({
@@ -86,7 +87,7 @@ exports.admin_article_create_post = [
 exports.admin_article_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             async.parallel(
                 {
                     article: function (callback) {
@@ -119,7 +120,7 @@ exports.admin_article_update_post = [
     sanitizeBody('date').toDate(),
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             let query = {
                 "_id": mongoose.Types.ObjectId(req.params.id_article)
             };
@@ -172,7 +173,7 @@ exports.admin_article_update_post = [
 exports.admin_article_delete_post = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
 
             Article.findById(req.params.id_article).exec(function (err, article) {
                 if (err) {
@@ -200,7 +201,7 @@ exports.admin_article_delete_post = [
 exports.admin_users_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             User.find({}, 'user_first_name user_family_name user_email')
                 .exec(function (err, list_users) {
                     if (err) {
@@ -216,7 +217,7 @@ exports.admin_users_get = [
 exports.admin_user_create_post = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             res.send('NOT IMPLEMENTED: admin_user_create_post');
         }
     }
@@ -226,7 +227,7 @@ exports.admin_user_create_post = [
 exports.admin_user_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             async.parallel(
                 {
                     user: function (callback) {
@@ -258,7 +259,7 @@ exports.admin_user_update_post = [
     sanitizeBody('*').trim().escape(),
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
 
             let update_set = {};
 
@@ -314,7 +315,7 @@ exports.admin_user_delete_post = [
 
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
 
             User.findById(req.params.id_user).exec(function (err, user) {
                 if (err) {
@@ -338,7 +339,7 @@ exports.admin_user_delete_post = [
 exports.admin_comments_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             Comment.find({}, 'comment_content comment_date')
                 .populate('comment_user', 'user_first_name user_family_name ')
                 .populate('comment_article', 'article_title article_content ')
@@ -359,7 +360,7 @@ exports.admin_comment_create_post = [
     sanitizeBody('date').toDate(),
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             Article.findById(req.body.article).exec(function (err, article) {
                 if (err) {
                     return res.status(500).send({ code: "500", message: "There was a problem finding an article related to the comment to create to the database: " + err.message, });
@@ -392,7 +393,7 @@ exports.admin_comment_create_post = [
 exports.admin_comment_get = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             Comment.findById(req.params.id_comment)
                 .populate('comment_user', 'user_first_name user_family_name ')
                 .populate('comment_article', 'article_title article_content ')
@@ -416,7 +417,7 @@ exports.admin_comment_update_post = [
     sanitizeBody('date').toDate(),
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             let update_set = {};
 
             if (req.body["content"])
@@ -466,7 +467,7 @@ exports.admin_comment_update_post = [
 exports.admin_comment_delete_post = [
     verifyToken,
     (token, req, res, next) => {
-        if (token && req.role == 'admin') {
+        if (token) {
             // Delete object and redirect to the list of book instances.
             Comment.findByIdAndRemove(req.params.id_comment, (err, comment) => {
                 if (err) {
