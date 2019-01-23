@@ -1359,6 +1359,398 @@
 					}
 				}
 			}
+		},
+		"/simpleuser/articles": {
+			"get": {
+				"security": [
+					{
+						"Bearer_simple_user": []
+					}
+				],
+				"summary": "Récupérer la liste de tous les articles.",
+				"description": "Récupérer la liste de tous les articles par un utilisateur simple authentifié",
+				"responses": {
+					"200": {
+						"description": "les détails de tous les articles.",
+						"schema": {
+							"type": "array",
+							"items": {
+								"properties": {
+									"_id": {
+										"type": "string"
+									},
+									"article_title": {
+										"type": "string"
+									},
+									"article_content": {
+										"type": "string"
+									},
+									"article_date": {
+										"type": "string",
+										"format": "date-time"
+									},
+									"__v": {
+										"type": "integer"
+									},
+									"article_virtual_content_introduction": {
+										"type": "string"
+									},
+									"article_virtual_url": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									},
+									"article_user": {
+										"type": "object",
+										"properties": {
+											"_id": {
+												"type": "string"
+											},
+											"user_first_name": {
+												"type": "string"
+											},
+											"user_family_name": {
+												"type": "string"
+											},
+											"user_virtual_full_name": {
+												"type": "string"
+											},
+											"user_virtual_url": {
+												"type": "string"
+											},
+											"id": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/simpleuser/article/{id_article}": {
+			"get": {
+				"security": [
+					{
+						"Bearer_simple_user": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id_article",
+						"required": true,
+						"description": "The article's id",
+						"type": "string"
+					}
+				],
+				"summary": "les détails de l'article sélectionné.",
+				"description": "les détails de l'article sélectionné.",
+				"responses": {
+					"200": {
+						"description": "les détails de l'article sélectionné.",
+						"schema": {
+							"properties": {
+								"article_comments": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"_id": {
+												"type": "string"
+											},
+											"comment_content": {
+												"type": "string"
+											},
+											"comment_user": {
+												"type": "string",
+												"description": "l'objectID du commentateur."
+											},
+											"comment_date": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"comment_article": {
+												"type": "string",
+												"description": "l'objectID de l'article rattaché au commentaire."
+											},
+											"__v": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"article": {
+									"type": "object",
+									"properties": {
+										"article_image": {
+											"type": "string"
+										},
+										"_id": {
+											"type": "string"
+										},
+										"article_title": {
+											"type": "string"
+										},
+										"article_content": {
+											"type": "string"
+										},
+										"article_date": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"__v": {
+											"type": "integer"
+										},
+										"article_virtual_content_introduction": {
+											"type": "string"
+										},
+										"article_virtual_url": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										},
+										"article_user": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string"
+												},
+												"user_first_name": {
+													"type": "string"
+												},
+												"user_family_name": {
+													"type": "string"
+												},
+												"user_virtual_full_name": {
+													"type": "string"
+												},
+												"user_virtual_url": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
+		"/simpleuser/user": {
+			"get": {
+				"security": [
+					{
+						"Bearer_simple_user": []
+					}
+				],
+				"summary": "les détails du simple utilisateur actuellement authentifié.",
+				"description": "les détails du simple utilisateur actuellement authentifié.",
+				"responses": {
+					"200": {
+						"description": "les détails du simple utilisateur actuellement authentifié.",
+						"schema": {
+							"properties": {
+								"user": {
+									"type": "object",
+									"properties": {
+										"_id": {
+											"type": "string",
+											"description": "l'objectID de l'utilisateur."
+										},
+										"user_role": {
+											"type": "string",
+											"enum": [
+												"admin",
+												"simpleuser"
+											]
+										},
+										"user_first_name": {
+											"type": "string"
+										},
+										"user_family_name": {
+											"type": "string"
+										},
+										"user_email": {
+											"type": "string"
+										},
+										"__v": {
+											"type": "integer"
+										},
+										"user_virtual_full_name": {
+											"type": "string"
+										},
+										"user_virtual_url": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									}
+								},
+								"user_articles": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"_id": {
+												"type": "string",
+												"description": "l'objectID de l'article."
+											},
+											"id": {
+												"type": "string",
+												"description": "l'objectID de l'article."
+											},
+											"article_title": {
+												"type": "string"
+											},
+											"article_content": {
+												"type": "string"
+											},
+											"article_virtual_content_introduction": {
+												"type": "string"
+											},
+											"article_virtual_url": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"user_comments": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"_id": {
+												"type": "string",
+												"description": "l'objectID du commentaire."
+											},
+											"id": {
+												"type": "string",
+												"description": "l'objectID du commentaire"
+											},
+											"comment_content": {
+												"type": "string"
+											},
+											"comment_virtual_url": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/simpleuser/comment/create": {
+			"post": {
+				"security": [
+					{
+						"Bearer_simple_user": []
+					}
+				],
+				"summary": "Création d'un commentaire lié à un article.",
+				"parameters": [
+					{
+						"name": "comment",
+						"in": "body",
+						"description": "les champs du commentaire à créer.",
+						"schema": {
+							"required": [
+								"content",
+								"article"
+							],
+							"properties": {
+								"content": {
+									"type": "string",
+									"description": "contenu du commentaire à créer."
+								},
+								"article": {
+									"type": "string",
+									"description": "id de l'article lié au commentaire à créer."
+								},
+								"date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "date de création du commentaire."
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "les détails du commentaire à peine créé.",
+						"schema": {
+							"required": [
+								"comment_content",
+								"_id",
+								"comment_user",
+								"comment_date",
+								"comment_article",
+								"__v"
+							],
+							"properties": {
+								"comment_article": {
+									"type": "string",
+									"description": "l'id de l'article lié au commentaire."
+								},
+								"comment_content": {
+									"type": "string",
+									"description": "le contenu du contenu."
+								},
+								"comment_date": {
+									"type": "string",
+									"format": "date-time",
+									"description": "date de création du commentaire."
+								},
+								"comment_user": {
+									"type": "string",
+									"description": "l'objectID de l'auteur du commentaire."
+								},
+								"_id": {
+									"type": "string",
+									"description": "l'objectID du commentaire."
+								},
+								"__v": {
+									"type": "integer"
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/responses/Standard404ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
 		}
 	},
 	"definitions": {
