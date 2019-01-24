@@ -4,7 +4,7 @@ let Schema = mongoose.Schema;
 let bcrypt = require('bcryptjs');
 
 let jwt = require('jsonwebtoken');  
-let config = require('../config');
+let config = require('../config/config');
 
 let UserSchema = new Schema(
   {

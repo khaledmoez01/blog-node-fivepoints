@@ -24,7 +24,7 @@ mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-require('./passport');
+require('./config/passport');
 
 app.use(logger('dev'));
 app.use(express.json());

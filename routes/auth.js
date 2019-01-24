@@ -1,5 +1,5 @@
 let jwt    = require('express-jwt');
-let config = require('../config');
+let config = require('../config/config');
 
 const getTokenFromHeaders = (req) => {
     const { headers: { authorization } } = req;
