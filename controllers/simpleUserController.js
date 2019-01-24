@@ -1,41 +1,14 @@
 let Article = require('../models/article');
 let User    = require('../models/user');
 let Comment = require('../models/comment');
-let jwt     = require('jsonwebtoken');
-let config  = require('../config');
-
-const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 let async = require('async');
 
-
-function verifyToken(req, res, next) {
-    //let token = req.headers['x-access-token'];
-    let token = req.headers['authorization'];
-
-    if (!token)
-        return res.status(403).send({ code: "403", auth: false, token: null, message: 'No token provided.' });
-
-    let token_split = token.split(' ').pop();
-
-    jwt.verify(token_split, config.secret, function (err, decoded) {
-        if (err)
-            return res.status(403).send({ code: "403", auth: false, token: null, message: 'Failed to authenticate token.' });
-        else if (decoded.role != 'simpleuser')
-            return res.status(403).send({ code: "403", auth: false, token: null, message: 'Access denied' });
-
-        // if everything good, save to request for use in other routes
-        req.userId = decoded.id;
-        next(token);
-    });
-}
-
 //18   Récupérer la liste des articles
 exports.user_articles_get = [
-    verifyToken,
-    (token, req, res, next) => {        
-        if (token) {
+    (req, res, next) => {        
+        if (req.payload.role === 'simpleuser') {
             Article.find({})
                 .select(' -article_image ') // le '-' sert à exclure ces donnes
                 .populate('article_user', 'user_first_name user_family_name ')
@@ -47,13 +20,15 @@ exports.user_articles_get = [
 
                 });
         }
+        else {
+            return res.status(403).send({ code: "403", message: "Access Denied" });
+        }
     }
 ];
 //19   Récupérer les détails d’un article, de son auteur, de ses commentaires et le commentateur de chaque commentateur
 exports.user_article_get = [
-    verifyToken,
-    (token, req, res, next) => {        
-        if (token) {
+    (req, res, next) => {        
+        if (req.payload.role === 'simpleuser') {
             async.parallel(
                 {
                     article: function (callback) {
@@ -76,24 +51,26 @@ exports.user_article_get = [
                 }
             );
         }
+        else {
+            return res.status(403).send({ code: "403", message: "Access Denied" });
+        }
     }
 ];
 
 //20   Récupérer les détails de user authentifié et des articles écrits par ce user et les commentaires écrits par ce user
 exports.user_get = [
-    verifyToken,
-    (token, req, res, next) => {        
-        if (token) {
+    (req, res, next) => {        
+        if (req.payload.role === 'simpleuser') {
             async.parallel(
                 {
                     user: function (callback) {
-                        User.findById(req.userId).select(' -user_password').exec(callback);
+                        User.findById(req.payload.id).select(' -user_password').exec(callback);
                     },
                     user_articles: function (callback) {
-                        Article.find({ 'article_user': req.userId }, 'article_title article_content').exec(callback);
+                        Article.find({ 'article_user': req.payload.id }, 'article_title article_content').exec(callback);
                     },
                     user_comments: function (callback) {
-                        Comment.find({ 'comment_user': req.userId }, 'comment_content').exec(callback);
+                        Comment.find({ 'comment_user': req.payload.id }, 'comment_content').exec(callback);
                     }
                 },
                 function (err, results) {
@@ -107,6 +84,9 @@ exports.user_get = [
                 }
             );
         }
+        else {
+            return res.status(403).send({ code: "403", message: "Access Denied" });
+        }
     }
 ];
 //21   body(Contenu, date ) -  Créer un commentaire sur un article. Le commentateur sera ce même utilisateur
@@ -114,9 +94,8 @@ exports.user_comment_create_post = [
     sanitizeBody('article').trim().escape(),
     sanitizeBody('content').trim().escape(),
     sanitizeBody('date').toDate(),
-    verifyToken,
-    (token, req, res, next) => {        
-        if (token) {
+    (req, res, next) => {        
+        if (req.payload.role === 'simpleuser') {
             Article.findById(req.body.article).exec(function (err, article) {
                 if (err) {
                     return res.status(500).send({ code: "500", message: "There was a problem finding an article related to the comment to create to the database: " + err.message, });
@@ -128,7 +107,7 @@ exports.user_comment_create_post = [
 
                 let comment = new Comment({
                     comment_content: req.body.content,
-                    comment_user: req.userId,
+                    comment_user: req.payload.id,
                     comment_date: req.body.date,
                     comment_article: article._id  // article._id req.body.article
                 });
@@ -141,6 +120,9 @@ exports.user_comment_create_post = [
                     res.status(200).send(comment);
                 });
             });
+        }
+        else {
+            return res.status(403).send({ code: "403", message: "Access Denied" });
         }
     }
 ];

@@ -1,6 +1,5 @@
 let User = require('../models/user');
-let jwt = require('jsonwebtoken');
-let config = require('../config');
+let passport = require('passport');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -11,11 +10,6 @@ let async = require('async');
 exports.index_signup_post = [
 
     // Sanitize fields.
-    /*sanitizeBody('first_name').trim().escape(),
-    sanitizeBody('family_name').trim().escape(),
-    sanitizeBody('email').trim().escape(),
-    sanitizeBody('password').trim().escape(),
-    sanitizeBody('role').trim().escape(),*/
     sanitizeBody('*').trim().escape(),
 
     (req, res, next) => {
@@ -71,29 +65,21 @@ exports.index_login_post = [
                 if (err) return res.status(500).send({ code: "500", message: "Error on the server." });
                 if (!user) return res.status(404).send({ code: "404", message: "No user found." });
 
-                if (user.comparePassword(req.body.password)) {
-
-                    // password matches
-                    let token = jwt.sign(
-                        {
-                            id           : user._id             ,
-                            first_name   : user.user_first_name ,
-                            family_name  : user.user_family_name,
-                            email        : user.user_email      ,
-                            password     : user.user_password   ,
-                            role         : user.user_role
-                        },
-                        config.secret,
-                        {
-                            expiresIn: 86400 // expires in 24 hours
-                        }
-                    );
-                    res.status(200).send({ auth: true, token: token, message: 'ok' });
-                }
-                else {
-                    // password does not match
-                    return res.status(401).send({ code: "401", auth: false, token: null, message: 'password does not match' });
-                }
+                return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+                    if(err) {
+                      return next(err);
+                    }
+                
+                    if(passportUser) {
+                      const user = passportUser;
+                      user.token = passportUser.generateJWT();
+                
+                      return res.json({ user: user.toAuthJSON() });
+                    }
+                
+                    //return res.status(400).info;
+                    return res.status(400).send({ code: "400", message: info.errors});
+                  })(req, res, next);
             });
         }
     }

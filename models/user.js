@@ -3,6 +3,9 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let bcrypt = require('bcryptjs');
 
+let jwt = require('jsonwebtoken');  
+let config = require('../config');
+
 let UserSchema = new Schema(
   {
     user_first_name : {
@@ -112,7 +115,28 @@ UserSchema.pre(
 );
 
 UserSchema.methods.comparePassword = function(candidatePassword) {
-  return bcrypt.compareSync(candidatePassword, this.user_password);
+    return bcrypt.compareSync(candidatePassword, this.user_password);
+};
+
+UserSchema.methods.generateJWT = function() {
+    const today = new Date();
+    const expirationDate = new Date(today);
+    expirationDate.setDate(today.getDate() + 60);
+  
+    return jwt.sign({
+      email: this.user_email,
+      id: this._id,
+      role: this.user_role,
+      exp: parseInt(expirationDate.getTime() / 1000, 10),
+    }, config.secret);
+}
+
+UserSchema.methods.toAuthJSON = function() {
+    return {
+      _id: this._id,
+      email: this.user_email,
+      token: this.generateJWT(),
+    };
 };
 
 //Export model

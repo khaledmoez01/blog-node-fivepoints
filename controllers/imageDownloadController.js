@@ -1,6 +1,3 @@
-let jwt = require('jsonwebtoken');
-let config = require('../config');
-
 let path = require('path');
 let fs = require('fs');
 
@@ -18,32 +15,10 @@ let mime = {
     ,js  : 'application/javascript'
 };
 
-function verifyToken(req, res, next) {
-    //let token = req.headers['x-access-token'];
-    let token = req.headers['authorization'];
-
-    if (!token)
-        return res.status(403).send({ code: "403", auth: false, token: null, message: 'No token provided.' });
-
-    let token_split = token.split(' ').pop();
-
-    jwt.verify(token_split, config.secret, function (err, decoded) {
-        if (err)
-            return res.status(403).send({ code: "403", auth: false, token: null, message: 'Failed to authenticate token.' });
-
-        // if everything good, save to request for use in other routes
-        req.userId = decoded.id;
-        req.role = decoded.role;
-        next(token);
-    });
-}
-
 //22   recuperation d'une image
 exports.imageDownload_image_get = [
 
-    verifyToken,
-
-    (token, req, res, next) => {
+    (req, res, next) => {
         //on a suivi la réponse de "rsp" dans la discussion suivante:
         //    https://stackoverflow.com/questions/5823722/how-to-serve-an-image-using-nodejs
 
