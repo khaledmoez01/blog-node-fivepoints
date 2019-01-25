@@ -3,8 +3,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let bcrypt = require('bcryptjs');
 
-let jwt = require('jsonwebtoken');  
-let config = require('../config/config');
+let jwt = require('jsonwebtoken');
 
 let UserSchema = new Schema(
   {
@@ -128,7 +127,7 @@ UserSchema.methods.generateJWT = function() {
       id: this._id,
       role: this.user_role,
       exp: parseInt(expirationDate.getTime() / 1000, 10),
-    }, config.secret);
+    }, process.env.SECRET);
 }
 
 UserSchema.methods.toAuthJSON = function() {

@@ -17,7 +17,7 @@ let app = express();
 app.use(helmet());
 //Set up mongoose connection
 let mongoose = require('mongoose');
-let mongoDB = 'mongodb://localhost:27017/fivePointsBlog';
+let mongoDB = 'mongodb://' + process.env.DB_HOST + ":" + process.env.DB_PORT + '/' + process.env.DB_NAME;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = global.Promise;
@@ -50,7 +50,7 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
 
-  if(err.name === 'UnauthorizedError') {    
+  if(err.name === 'UnauthorizedError') {
       return res.status(err.status).send({ code: err.status, message: err.message });
   }
   // set locals, only providing error in development
@@ -62,8 +62,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-let port = process.env.PORT || 3000;
-
-app.listen(port, function() {
-  console.log('Express server listening on port ' + port);
+app.listen(process.env.PORT, function() {
+  console.log('Express server listening on port ' + process.env.PORT);
 });

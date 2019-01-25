@@ -2,7 +2,7 @@ let path = require('path');
 let fs = require('fs');
 
 // __dirname: C:\Users\Khaled\Desktop\fivepoints\03_niveau03\06_projetBlog\fivePointsBlog\controllers
-let dir = path.join(__dirname, '..\\uploads');
+let dir = path.join(process.cwd(), process.env.IMAGE_UPLOAD_DIR);
 
 let mime = {
      html: 'text/html'
@@ -19,7 +19,7 @@ let mime = {
 exports.imageDownload_image_get = [
 
     (req, res, next) => {
-        //on a suivi la réponse de "rsp" dans la discussion suivante:
+        //on a suivi la reponse de "rsp" dans la discussion suivante:
         //    https://stackoverflow.com/questions/5823722/how-to-serve-an-image-using-nodejs
 
         // ici, par exemple, ces deux variables "req.path" et "dir" valent:
