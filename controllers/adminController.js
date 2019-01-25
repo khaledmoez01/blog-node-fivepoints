@@ -327,30 +327,22 @@ exports.admin_comment_create_post = [
     
     (req, res, next) => {
         if (req.payload.role === 'admin') {
-            Article.findById(req.body.article).exec(function (err, article) {
-                if (err) {
-                    return res.status(500).send({ code: "500", message: "There was a problem finding an article related to the comment to create to the database: " + err.message, });
-                }
-
-                if (article == null) {
-                    return res.status(404).send({ code: "404", message: "No article found matching the req.body.article when creating a comment" });
-                }
 
                 let comment = new Comment({
                     comment_content: req.body.content,
                     comment_user: req.payload.id,
                     comment_date: req.body.date,
-                    comment_article: article._id  // article._id req.body.article
+                    comment_article: mongoose.Types.ObjectId(req.body.article)   // article._id req.body.article
                 });
 
-                comment.save(function (err) {
+                comment.save(function (err, newComment) {
                     if (err) {
                         return res.status(500).send({ code: "500", message: "There was a problem adding a comment to the database: " + err.message, });
                     }
+
                     //successful
-                    res.status(200).send(comment);
-                });
-            });
+                    res.status(200).send(newComment);
+                })
         }
     }
 ];
@@ -442,6 +434,7 @@ exports.admin_comment_delete_post = [
                 else if (comment == null) {
                     return res.status(404).send({ code: "404", message: "No comment found." });
                 }
+                comment.remove();
                 res.status(200).send({  code: "200",  message: 'Suppression de commentaire réussie.' });
             })
         }

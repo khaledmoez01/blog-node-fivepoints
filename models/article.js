@@ -3,6 +3,15 @@ let moment = require('moment');
 
 let Schema = mongoose.Schema;
 
+let subSchema = new mongoose.Schema(
+    {
+        comment_id: { type: Schema.Types.ObjectId, ref: 'Comment', required: [true, 'comment\'s article is mandatory'] }
+    },
+    {
+        _id : false
+    }
+);
+
 let ArticleSchema = new Schema(
   {
     article_title : {
@@ -26,7 +35,10 @@ let ArticleSchema = new Schema(
         type: Date,
         default: Date.now,
         validate: [(v) => v instanceof Date, 'article date shall be a date.']
-    }
+    },
+    /* ** kmg ajout article_comments ** */
+    article_comments: [subSchema]
+    /* ** fin kmg ajout article_comments ** */
   },
   {
     toObject: { virtuals: true },
