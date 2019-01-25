@@ -23,6 +23,8 @@ exports.admin_articles_get = [
           }
           res.status(200).send(listArticles)
         })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -50,6 +52,8 @@ exports.admin_article_create_post = [
         // successful
         res.status(200).send(article)
       })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -79,6 +83,8 @@ exports.admin_article_get = [
           res.status(200).send(results)
         }
       )
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -129,6 +135,8 @@ exports.admin_article_update_post = [
           }
         )
       }
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -155,6 +163,8 @@ exports.admin_article_delete_post = [
           return res.status(500).send({ code: '500', message: 'There was a problem deleting the article in the database: ' + err.message })
         })
       })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -171,6 +181,8 @@ exports.admin_users_get = [
           }
           res.status(200).send(listUsers)
         })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -201,6 +213,8 @@ exports.admin_user_get = [
           res.status(200).send(results)
         }
       )
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -251,6 +265,8 @@ exports.admin_user_update_post = [
           }
         )
       }
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -273,6 +289,8 @@ exports.admin_user_delete_post = [
           return res.status(500).send({ code: '500', message: 'There was a problem deleting the user in the database: ' + err.message })
         })
       })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -291,6 +309,8 @@ exports.admin_comments_get = [
           }
           res.status(200).send(listComments)
         })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -327,6 +347,8 @@ exports.admin_comment_create_post = [
           res.status(200).send(comment)
         })
       })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -349,6 +371,8 @@ exports.admin_comment_get = [
           // Successful, so render.
           res.status(200).send(comment)
         })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -397,6 +421,8 @@ exports.admin_comment_update_post = [
           }
         )
       }
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]
@@ -415,6 +441,8 @@ exports.admin_comment_delete_post = [
         }
         res.status(200).send({ code: '200', message: 'Suppression de commentaire réussie.' })
       })
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
     }
   }
 ]

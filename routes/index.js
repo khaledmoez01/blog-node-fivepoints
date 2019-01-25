@@ -11,9 +11,9 @@ router.get('/', function (req, res, next) {
 })
 
 // 01   body(firstName, lastName, email, password, role) - Création d’un user
-router.post('/signup', auth.optional, indexController.index_signup_post) // kmg done
+router.post('/signup', auth.optional, indexController.index_signup_post)
 
 // 02   body(email, password) - Authentification d’un user
-router.post('/login', auth.optional, indexController.index_login_post) // kmg done
+router.post('/login', auth.optional, indexController.index_login_post)
 
 module.exports = router
