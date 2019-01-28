@@ -26,7 +26,11 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 require('./config/passport')
 
-app.use(logger('dev'))
+// don't show the log when it is test
+if (process.env.NODE_ENV !== 'test') {
+  // use morgan to log at command line
+  app.use(logger('dev'))
+}
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
@@ -64,3 +68,5 @@ app.use(function (err, req, res, next) {
 app.listen(process.env.PORT, function () {
   console.log('Express server listening on port ' + process.env.PORT)
 })
+
+module.exports = app
