@@ -7,7 +7,37 @@ const { sanitizeBody } = require('express-validator/filter')
 
 let async = require('async')
 
-// 03   Récupérer la liste des articles 00000011111
+// 02   Récupérer le nombre d'articles, d'utilisateurs et de commentaires
+exports.admin_count_get = [
+
+  (req, res, next) => {
+    if (req.payload.role === 'admin') {
+      async.parallel(
+        {
+          article_count: function (callback) {
+            Article.countDocuments({}, callback)
+          },
+          user_count: function (callback) {
+            User.countDocuments({}, callback)
+          },
+          comment_count: function (callback) {
+            Comment.countDocuments({}, callback)
+          }
+        },
+        function (err, results) {
+          if (err) {
+            return res.status(500).send({ code: '500', message: 'There was a problem counting the documents in the database: ' + err.message })
+          }
+          res.status(200).send(results)
+        }
+      )
+    } else {
+      return res.status(403).send({ code: 403, message: 'access denied' })
+    }
+  }
+]
+
+// 03   Récupérer la liste des articles
 exports.admin_articles_get = [
 
   (req, res, next) => {

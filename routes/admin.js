@@ -6,6 +6,9 @@ let auth = require('./auth')
 // Require controller modules.
 let adminController = require('../controllers/adminController')
 
+// 02   Récupérer le nombre d'articles, d'utilisateurs et de commentaires
+router.get('/', auth.required, adminController.admin_count_get)
+
 // 03   Récupérer la liste des articles
 router.get('/articles', auth.required, adminController.admin_articles_get)
 

@@ -91,6 +91,42 @@
 				}
 			}
 		},
+		"/admin/": {
+			"get": {
+				"security": [
+					{
+						"Bearer_admin": []
+					}
+				],
+				"summary": "Récupérer le nombre de documents par collection dans la base de données.",
+				"description": "Récupérer le nombre de documents par collection dans la base de données. par un administrateur authentifié",
+				"responses": {
+					"200": {
+						"description": "le nombre de documents par collection",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"article_count": {
+									"type": "integer"
+								},
+								"user_count": {
+									"type": "integer"
+								},
+								"comment_count": {
+									"type": "integer"
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/responses/Todos403ErrorResponse"
+					},
+					"500": {
+						"$ref": "#/responses/Standard500ErrorResponse"
+					}
+				}
+			}
+		},
 		"/admin/article/create": {
 			"post": {
 				"security": [
